@@ -1,0 +1,34 @@
+#!/bin/zsh
+#set your project prefix for issue  keys
+keyprefix=PLG 
+#set your project domain here
+domain=alexklymov.atlassian.net
+echo Enter jira keys NUMBERS separated by space, omitting the prefix
+read inputs
+keys=(${(@s: :)inputs})
+enteredkeys=${#keys[@]}
+jql=%22
+while [ $enteredkeys -gt 0 ]
+do
+	result+="\""$keyprefix"-"$keys[$enteredkeys]"\""", "
+	jql+=$keyprefix"-"$keys[$enteredkeys]%22%2C%20%22
+	((enteredkeys--))
+	if [ $enteredkeys -eq 0 ]
+	then
+	result=${result%??}
+	jql=${jql%????????????}
+	jql+=%22
+	fi
+done
+#copy  quoted issue keys into Mac clipboard
+echo $result | pbcopy 
+echo "${#keys[@]} issues entered and copied to clipboard with quotes for JQL: "$result
+#echo $jql
+#echo "https://alexklymov.atlassian.net/jira/software/c/projects/PLG/issues/?jql=project%20%3D%20%22PLG%22%20AND%20key%20in%20%28%22PLG-3%22%2C%22PLG-2%22%29ORDER%20BY%20created%20DESC%20"
+#echo $jql
+
+#Open jira issues in default Mac browser. Pay attention to URL string as it may be different depending on the version  of Jira
+#open "https://$domain/jira/issues/?jql=project%20%3D%20$keyprefix%20AND%20key%20in%20($jql)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC"
+open "https://$domain/jira/software/c/projects/$keyprefix/issues/?jql=project%20%3D%20$keyprefix%20AND%20key%20in%20($jql)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC"
+
+
