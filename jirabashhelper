@@ -1,12 +1,38 @@
 #!/bin/zsh
 #set your project prefix for issue  keys
-keyprefix=PLG 
+keyprefix=DCM 
 #set your project domain here
-domain=alexklymov.atlassian.net
+#domain=alexklymov.atlassian.net
+domain=luxproject.luxoft.com
+
+while getopts 'dp:h' opt; do
+  case "$opt" in
+    p)
+      arg="$OPTARG"
+      echo "Processing option 'p' with '${OPTARG}' argument"
+	  keyprefix="$OPTARG"
+      ;;
+	d)
+      arg="$OPTARG"
+      echo "Processing option 'd' with '${OPTARG}' argument"
+	  domain="$OPTARG"
+      ;;
+   
+    ?|h)
+      echo "Usage: $(basename $0) [-d domain.com] [-p prefix]"
+      exit 1
+      ;;
+  esac
+done
+shift "$(($OPTIND -1))"
+
 echo Enter jira keys NUMBERS separated by space, omitting the prefix
 read inputs
 keys=(${(@s: :)inputs})
 enteredkeys=${#keys[@]}
+
+
+
 jql=%22
 while [ $enteredkeys -gt 0 ]
 do
@@ -28,7 +54,7 @@ echo "${#keys[@]} issues entered and copied to clipboard with quotes for JQL: "$
 #echo $jql
 
 #Open jira issues in default Mac browser. Pay attention to URL string as it may be different depending on the version  of Jira
-#open "https://$domain/jira/issues/?jql=project%20%3D%20$keyprefix%20AND%20key%20in%20($jql)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC"
-open "https://$domain/jira/software/c/projects/$keyprefix/issues/?jql=project%20%3D%20$keyprefix%20AND%20key%20in%20($jql)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC"
+open "https://$domain/jira/issues/?jql=project%20%3D%20$keyprefix%20AND%20key%20in%20($jql)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC"
+#open "https://$domain/jira/software/c/projects/$keyprefix/issues/?jql=project%20%3D%20$keyprefix%20AND%20key%20in%20($jql)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC"
 
 
